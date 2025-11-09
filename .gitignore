@@ -1,15 +1,24 @@
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
-local.properties
+# Archivos del IDE (Android Studio / IntelliJ) en cualquier subcarpeta
+**/*.iml
+**/.idea/
+**/.idea/caches/
+**/.idea/libraries/
+**/.idea/modules.xml
+**/.idea/workspace.xml
+**/.idea/navEditor.xml
+**/.idea/assetWizardSettings.xml
+
+# Archivos de configuración local
+**/local.properties
+
+# Carpetas de Gradle en cualquier nivel
+**/.gradle/
+
+# Carpetas de compilación en cualquier subproyecto
+**/build/
+**/captures/
+**/.externalNativeBuild/
+**/.cxx/
+
+# Archivos del sistema operativo
+**/.DS_Store
