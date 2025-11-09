@@ -1,9 +1,14 @@
 package com.inf251.basedatos
 
+import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import android.widget.ListView
+import android.widget.TableLayout
+import android.widget.TableRow
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
@@ -28,7 +33,6 @@ class MainActivity : AppCompatActivity() {
         txtNota = findViewById(R.id.Nota)
         txtNotaCurv = findViewById(R.id.NotaCurv)
         txtCodGen = findViewById(R.id.CodGen)
-        listview = findViewById(R.id.ListData)
     }
     fun adicion(view: View){
         val appatern = txtPatern.text.toString().trim()
@@ -70,11 +74,27 @@ class MainActivity : AppCompatActivity() {
         }
         cursor.close()
     }
+
     fun listar(view: View){
         val cursor = bd.listar()
-        val lista = mutableListOf<List<String>>()
+        val tableLayout = findViewById<TableLayout>(R.id.tableLayout)
+        tableLayout.removeAllViews()
+        val headerRow = TableRow(this)
+        val headers = listOf<String>("CodGen\n", "Apellido\n","Nombre\n", "Fecha\nNac", "Nota\n","Nota\nCurva")
+        for (title in headers){
+            val tv = TextView(this)
+            tv.text=title
+            tv.setPadding(8,8,8,8)
+            tv.setTextColor(Color.BLACK)
+            tv.setTypeface(null, Typeface.BOLD)
+            tv.setBackgroundResource(R.drawable.borde)
+            headerRow.addView(tv)
+        }
+        tableLayout.addView(headerRow)
+
         while (cursor.moveToNext()){
-            val fila = listOf(
+            val row = TableRow(this)
+            val datos = listOf(
                 cursor.getString(cursor.getColumnIndexOrThrow("codgen")),
                 cursor.getString(cursor.getColumnIndexOrThrow("appatern")),
                 cursor.getString(cursor.getColumnIndexOrThrow("nombre")),
@@ -82,10 +102,16 @@ class MainActivity : AppCompatActivity() {
                 cursor.getDouble(cursor.getColumnIndexOrThrow("nota")).toString(),
                 cursor.getDouble(cursor.getColumnIndexOrThrow("notacurv")).toString()
             )
-            lista.add(fila)
+            for(dato in datos){
+                val tv = TextView(this)
+                tv.text = dato
+                tv.setPadding(8,8,8,8)
+                tv.setTextColor(Color.BLACK)
+                tv.setBackgroundResource(R.drawable.borde)
+                row.addView(tv)
+            }
+            tableLayout.addView(row)
         }
-        val adapter = TablaAdapter(this, lista)
-        listview.adapter = adapter
         cursor.close()
     }
     fun modificar(view: View){

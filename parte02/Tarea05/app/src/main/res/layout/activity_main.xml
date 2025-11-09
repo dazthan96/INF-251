@@ -126,62 +126,12 @@
                 android:onClick="listar">
             </ImageButton>
         </LinearLayout>
-        <LinearLayout
+
+        <TableLayout
+            android:id="@+id/tableLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="8dp"
-            >
-
-            <TextView
-                android:layout_width="65dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:text="Codigo"/>
-
-            <TextView
-                android:layout_width="55dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:text="Paterno"/>
-
-            <TextView
-                android:layout_width="55dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:text="Nombre"/>
-
-            <TextView
-                android:layout_width="75dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:text="Fecha\nNacimiento"/>
-
-            <TextView
-                android:layout_width="40dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:text="Nota"/>
-
-            <TextView
-                android:layout_width="50dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:text="Nota\nCurvada"/>
-        </LinearLayout>
-
-        <ListView
-            android:id="@+id/ListData"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:dividerHeight="1dp"/>
+            android:padding="5dp"/>
     </LinearLayout>
 
 
