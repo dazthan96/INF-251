@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
@@ -36,6 +39,7 @@ import androidx.compose.ui.unit.min
 import androidx.room.Room
 import com.inf252.roomdb.data.dao.StudentDao
 import com.inf252.roomdb.data.db.AlumnoDB
+import com.inf252.roomdb.data.entity.StudentEntity
 
 class MainActivity : ComponentActivity() {
     private lateinit var db: AlumnoDB
@@ -53,6 +57,7 @@ class MainActivity : ComponentActivity() {
             var nombre by remember { mutableStateOf("") }
             var fechanac by remember { mutableStateOf("") }
             var notaText by remember { mutableStateOf("0.0") }
+            var estudiantes by remember { mutableStateOf(dao.listar()) }
             val codigo = fechanac.filter{it.isLetterOrDigit()}
             val nuevoCod = "${appatern.firstOrNull()?:'_'}${nombre.firstOrNull()?:'_'}-${codigo.take(4)}${codigo.takeLast(2)}"
             val codgen = if (nuevoCod.length <9) "Codigo" else nuevoCod
@@ -67,7 +72,7 @@ class MainActivity : ComponentActivity() {
                 Spacer(Modifier.height(10.dp))
                 ReuseTextField(nombre, {nombre = it}, "Nombre", type = KeyboardType.Text,true)
                 Spacer(Modifier.height(10.dp))
-                ReuseTextField(fechanac, {fechanac=it}, "Fecha de Nacimiento dd/mm/yyyy", KeyboardType.Text,true)
+                ReuseTextField(fechanac, {fechanac=it}, "Fecha de Nacimiento dd/mm/yyyy", KeyboardType.Phone,true)
                 Spacer(Modifier.height(10.dp))
                 ReuseTextField(notaText, {notaText= it}, "Nota",KeyboardType.Number,true)
                 Spacer(Modifier.height(10.dp))
@@ -75,7 +80,27 @@ class MainActivity : ComponentActivity() {
                 Spacer(Modifier.height(10.dp))
                 ReuseTextField(codgen, {},"Codigo Alumno", KeyboardType.Text, false)
                 Spacer(Modifier.height(10.dp))
+                Row (Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround){
+                    IconButtonReuse(R.drawable.add,"añadir",
+                        {
+                            val estudiante = StudentEntity(codgen,appatern,nombre, fechanac,notaOriginal,notaCurvada)
+                            dao.insertar(estudiante)
+                            estudiantes=dao.listar()
+                        },
+                        Color.White,Color(76, 175, 80))
+                    IconButtonReuse(R.drawable.search, "buscar",{},Color.White,Color(33, 150, 243))
+                    IconButtonReuse(R.drawable.delete, "borrar", {},Color.White,Color(244, 67, 54))
+                    IconButtonReuse(R.drawable.edit,"editar", {},Color.White,Color(255, 152, 0))
+                    IconButtonReuse(R.drawable.list,"listar",{},Color.White,Color(63, 81, 181))
+                    IconButtonReuse(R.drawable.exit,"salir",{finish()},Color.Black,Color(158, 158, 158))
 
+                }
+                Spacer(Modifier.height(5.dp))
+                LazyColumn {
+                    items(estudiantes){ estudiante->
+                        Text("${estudiante.codgen} - ${estudiante.nombre} - ${estudiante.apPatern} - ${estudiante.nota} - ${estudiante.notaCurv} - ${estudiante.fechaNac}")
+                    }
+                }
             }
         }
     }
