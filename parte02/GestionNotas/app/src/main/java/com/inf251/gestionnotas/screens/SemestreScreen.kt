@@ -19,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.inf251.gestionnotas.R
@@ -38,10 +37,10 @@ import com.inf251.gestionnotas.navigation.AppScreens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EstudianteScreen(navController: NavController){
+fun AsignarScreen(navController: NavController){
     Scaffold (
         topBar = {
-            TopAppBar(title = {TitleText("Estudiante",Color.Black)}, colors = TopAppBarDefaults.topAppBarColors(AddColor))
+            TopAppBar(title = {TitleText("Gestión",Color.Black)}, colors = TopAppBarDefaults.topAppBarColors(AddColor))
         },
         bottomBar = {
             Row(Modifier.fillMaxWidth()){
@@ -49,62 +48,55 @@ fun EstudianteScreen(navController: NavController){
                 ) {
                     navController.navigate(AppScreens.DocenteScreen.route)
                 }
-                ReuseBarButton(R.drawable.estudiante,"Estudiante",0.5f,AddColor,Color.White,false
-                ) {}
-                ReuseBarButton(R.drawable.materia,"Materia",1.0f,AddColor,Color.White,true
+                ReuseBarButton(R.drawable.materia,"Materia",0.5f,AddColor,Color.White,true
                 ) {
                     navController.navigate(AppScreens.MateriaScreen.route)
                 }
+                ReuseBarButton(R.drawable.asignar,"Asignar",1.0f,AddColor,Color.White,false
+                ) {}
+
             }
         }
 
     ){
-            innerPadding->EstudianteContent(modifier=Modifier.padding(innerPadding))
+            innerPadding->AsignarContent(modifier=Modifier.padding(innerPadding))
     }
 }
 @Composable
-fun EstudianteContent(modifier: Modifier=Modifier){
-    var ciEstudiante by remember { mutableStateOf("") }
-    var nombreEstudiante by remember { mutableStateOf("") }
-    var paternoEstudiante by remember { mutableStateOf("") }
-    var maternoEstudiante by remember {mutableStateOf("")  }
+fun AsignarContent(modifier: Modifier=Modifier){
+    var ciDocente by remember { mutableStateOf("") }
+    var codMateria by remember { mutableStateOf("") }
+    var semestre by remember { mutableStateOf("") }
     Column(modifier = modifier) {
         Row (Modifier.fillMaxWidth()){
             Column (
                 Modifier.fillMaxWidth(0.8f).padding(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally) {
                 ReuseOutlineText(
-                    ciEstudiante,
-                    { ciEstudiante = it },
-                    "Carnet de Identidad",
+                    ciDocente,
+                    { ciDocente = it },
+                    "Docente",
                     true,
                     false,
                     KeyboardType.Text
                 )
                 ReuseOutlineText(
-                    paternoEstudiante,
-                    { paternoEstudiante = it },
-                    "Paterno",
+                    codMateria,
+                    { codMateria = it },
+                    "Materia",
                     true,
                     false,
                     KeyboardType.Text
                 )
                 ReuseOutlineText(
-                    maternoEstudiante,
-                    { maternoEstudiante = it },
-                    "Materno",
+                    semestre,
+                    { semestre = it },
+                    "Semestre",
                     true,
                     false,
                     KeyboardType.Text
                 )
-                ReuseOutlineText(
-                    nombreEstudiante,
-                    { nombreEstudiante = it },
-                    "Nombre",
-                    true,
-                    false,
-                    KeyboardType.Text
-                )
+
             }
             Column (Modifier
                 .fillMaxSize(),

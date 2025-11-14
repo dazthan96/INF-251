@@ -48,11 +48,12 @@ fun MateriaScreen(navController: NavController){
                 ) {
                     navController.navigate(AppScreens.DocenteScreen.route)
                 }
-                ReuseBarButton(R.drawable.estudiante,"Estudiante",0.5f,AddColor,Color.White,true
+                ReuseBarButton(R.drawable.materia,"Materia",0.5f,AddColor,Color.White,false) {}
+                ReuseBarButton(R.drawable.asignar,"Asignar",1.0f,AddColor,Color.White,true
                 ) {
-                    navController.navigate(AppScreens.EstudianteScreen.route)
+                    navController.navigate(AppScreens.AsignarScreen.route)
                 }
-                ReuseBarButton(R.drawable.materia,"Materia",1.0f,AddColor,Color.White,false) {}
+
             }
         }
 
@@ -63,9 +64,8 @@ fun MateriaScreen(navController: NavController){
 
 @Composable
 fun MateriaContent(modifier: Modifier=Modifier){
-    var codigoMateria by remember{ mutableStateOf("") }
+    var siglaMateria by remember{ mutableStateOf("") }
     var nombreMateria by remember{mutableStateOf("")}
-    var creditsMateria by remember { mutableStateOf("") }
     var carreraMateria by remember {mutableStateOf("")}
     var mencionMateria by remember { mutableStateOf("") }
     Column (
@@ -75,9 +75,8 @@ fun MateriaContent(modifier: Modifier=Modifier){
             Column (
                 Modifier.fillMaxWidth(0.8f).padding(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally){
-                ReuseOutlineText(codigoMateria, {codigoMateria=it}, "Codigo", true, false, KeyboardType.Text)
+                ReuseOutlineText(siglaMateria, {siglaMateria=it}, "Codigo", true, false, KeyboardType.Text)
                 ReuseOutlineText(nombreMateria,{nombreMateria=it},"Materia", true, false, KeyboardType.Text)
-                ReuseOutlineText(creditsMateria,{creditsMateria=it}, "Creditos", true, false,KeyboardType.Number)
                 ReuseOutlineText(carreraMateria, {carreraMateria=it}, "Carrera", true, false, KeyboardType.Text)
                 ReuseOutlineText(mencionMateria, {mencionMateria=it}, "Mencion", true, false,KeyboardType.Text)
             }

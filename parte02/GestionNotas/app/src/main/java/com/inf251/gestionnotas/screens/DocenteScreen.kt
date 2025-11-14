@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,8 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.inf251.gestionnotas.components.ReuseIconButtons
@@ -48,13 +44,14 @@ fun DocenteScreen(navController: NavController){
         },
         bottomBar = {Row(Modifier.fillMaxWidth()){
             ReuseBarButton(R.drawable.docente,"Docente",0.3f,AddColor,Color.White,false) {}
-            ReuseBarButton(R.drawable.estudiante,"Estudiante",0.5f,AddColor,Color.White,true
-            ) {
-                navController.navigate(AppScreens.EstudianteScreen.route)
-            }
-            ReuseBarButton(R.drawable.materia,"Materia",1.0f,AddColor,Color.White,true
+
+            ReuseBarButton(R.drawable.materia,"Materia",0.5f,AddColor,Color.White,true
             ) {
                 navController.navigate(AppScreens.MateriaScreen.route)
+            }
+            ReuseBarButton(R.drawable.asignar,"Asignar",1.0f,AddColor,Color.White,true
+            ) {
+                navController.navigate(AppScreens.AsignarScreen.route)
             }
         }
         }
@@ -67,11 +64,11 @@ fun DocenteScreen(navController: NavController){
 
 @Composable
 fun DocenteContent( modifier: Modifier=Modifier){
-    var cicompleto by remember { mutableStateOf("") }
-    var paterno by remember { mutableStateOf("") }
-    var materno by remember { mutableStateOf("") }
-    var nombre by remember { mutableStateOf("") }
-    var titulo by remember {mutableStateOf("")}
+    var ciDocente by remember { mutableStateOf("") }
+    var paternoDoc by remember { mutableStateOf("") }
+    var maternoDoc by remember { mutableStateOf("") }
+    var nombreDoc by remember { mutableStateOf("") }
+    var carreraDoc by remember {mutableStateOf("")}
     Column (
         modifier = modifier.fillMaxSize()
     ){
@@ -80,11 +77,11 @@ fun DocenteContent( modifier: Modifier=Modifier){
                 Modifier.fillMaxWidth(.8f).padding(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally)
             {
-                ReuseOutlineText(cicompleto, {cicompleto = it}, "Carnet de Identidad", true, false, KeyboardType.Text)
-                ReuseOutlineText(paterno, {paterno = it}, "Paterno", true, false, KeyboardType.Text)
-                ReuseOutlineText(materno, {materno = it}, "Materno", true, false, KeyboardType.Text)
-                ReuseOutlineText(nombre, {nombre=it}, "Nombre", true, false, KeyboardType.Text)
-                ReuseOutlineText(titulo, {titulo=it}, "Titulo", true, false, KeyboardType.Text)
+                ReuseOutlineText(ciDocente, {ciDocente = it}, "Carnet de Identidad", true, false, KeyboardType.Text)
+                ReuseOutlineText(paternoDoc, {paternoDoc = it}, "Paterno", true, false, KeyboardType.Text)
+                ReuseOutlineText(maternoDoc, {maternoDoc = it}, "Materno", true, false, KeyboardType.Text)
+                ReuseOutlineText(nombreDoc, {nombreDoc=it}, "Nombre", true, false, KeyboardType.Text)
+                ReuseOutlineText(carreraDoc, {carreraDoc=it}, "Carrera", true, false, KeyboardType.Text)
             }
             Column (Modifier
                 .fillMaxSize(),
