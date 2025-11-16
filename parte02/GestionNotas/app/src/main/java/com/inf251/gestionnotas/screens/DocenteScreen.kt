@@ -3,9 +3,16 @@ package com.inf251.gestionnotas.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
@@ -14,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,23 +29,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.inf251.gestionnotas.components.ReuseIconButtons
 import com.inf251.gestionnotas.components.ReuseOutlineText
 import com.inf251.gestionnotas.R
 import com.inf251.gestionnotas.components.AddColor
-import com.inf251.gestionnotas.components.DeleteColor
-import com.inf251.gestionnotas.components.EditColor
-import com.inf251.gestionnotas.components.ExitColor
-import com.inf251.gestionnotas.components.FormColor
-import com.inf251.gestionnotas.components.ListColor
+import com.inf251.gestionnotas.components.ContentText
 import com.inf251.gestionnotas.components.ReuseBarButton
+import com.inf251.gestionnotas.components.ReuseButtons
 import com.inf251.gestionnotas.components.SearchColor
+import com.inf251.gestionnotas.components.TagText
 import com.inf251.gestionnotas.components.TitleText
+import com.inf251.gestionnotas.data.dao.DocenteDao
+import com.inf251.gestionnotas.data.dao.DocenteFTS
+import com.inf251.gestionnotas.data.entity.DocenteEntity
 import com.inf251.gestionnotas.navigation.AppScreens
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DocenteScreen(navController: NavController){
+fun DocenteScreen(navController: NavController,docenteFTS: DocenteFTS,docenteDao: DocenteDao){
     Scaffold (
         topBar = {
             TopAppBar(title = {TitleText("Docente",Color.Black)}, colors = TopAppBarDefaults.topAppBarColors(AddColor))
@@ -57,47 +66,65 @@ fun DocenteScreen(navController: NavController){
         }
 
     ){
-        innerPadding->DocenteContent(modifier=Modifier.padding(innerPadding))
+        innerPadding->DocenteContent(modifier=Modifier.padding(innerPadding),navController,docenteFTS,docenteDao)
     }
 }
 
 
 @Composable
-fun DocenteContent( modifier: Modifier=Modifier){
-    var ciDocente by remember { mutableStateOf("") }
-    var paternoDoc by remember { mutableStateOf("") }
-    var maternoDoc by remember { mutableStateOf("") }
-    var nombreDoc by remember { mutableStateOf("") }
-    var carreraDoc by remember {mutableStateOf("")}
+fun DocenteContent( modifier: Modifier=Modifier, navController: NavController,docenteFTS: DocenteFTS,docenteDao: DocenteDao){
+    val scope = rememberCoroutineScope()
+    var param by remember { mutableStateOf("") }
+    var docentes by remember { mutableStateOf<List<DocenteEntity>>(emptyList()) }
     Column (
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize().padding(top = 25.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ){
-        Row (Modifier.fillMaxWidth()){
-            Column (
-                Modifier.fillMaxWidth(.8f).padding(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally)
-            {
-                ReuseOutlineText(ciDocente, {ciDocente = it}, "Carnet de Identidad", true, false, KeyboardType.Text)
-                ReuseOutlineText(paternoDoc, {paternoDoc = it}, "Paterno", true, false, KeyboardType.Text)
-                ReuseOutlineText(maternoDoc, {maternoDoc = it}, "Materno", true, false, KeyboardType.Text)
-                ReuseOutlineText(nombreDoc, {nombreDoc=it}, "Nombre", true, false, KeyboardType.Text)
-                ReuseOutlineText(carreraDoc, {carreraDoc=it}, "Carrera", true, false, KeyboardType.Text)
+        ReuseOutlineText(param, {param=it},"Buscar en Docentes",true,false, KeyboardType.Text)
+        Row(
+            Modifier.fillMaxWidth(0.8f),
+            horizontalArrangement = Arrangement.Center
+        ){
+            ReuseButtons("Gestionar",AddColor,Color.White) {
+                navController.navigate(AppScreens.DocenteForm.route)
             }
-            Column (Modifier
-                .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceAround
-            ){
-                Column {
-                    ReuseIconButtons(R.drawable.add, AddColor,Color.White,{})
-                    ReuseIconButtons(R.drawable.search, SearchColor,Color.White,{})
-                    ReuseIconButtons(R.drawable.edit, EditColor,Color.White,{})
-                    ReuseIconButtons(R.drawable.delete, DeleteColor,Color.White,{})
-                    ReuseIconButtons(R.drawable.list, ListColor,Color.White,{})
+            Spacer(Modifier.width(15.dp))
+            ReuseButtons("Buscar", SearchColor,Color.White) {
+                scope.launch {
+                    docentes = if(param.isBlank()){
+                        docenteDao.listarDocN()
+                    }else{
+                        docenteFTS.buscarDocFts(param)
+                    }
                 }
-                Column {
-                    ReuseIconButtons(R.drawable.nota, FormColor,Color.White,{})
-                    ReuseIconButtons(R.drawable.exit, ExitColor,Color.White,{})
+            }
+        }
+        Spacer(Modifier.height(25.dp))
+        LazyColumn {
+            items(docentes){docente->
+                Card (
+                    Modifier.fillMaxWidth().padding(vertical = 5.dp),
+                    colors= CardDefaults.cardColors(Color(0xFFDCDCDC))
+                ){
+                    Column (Modifier.padding(25.dp)){
+                        Row {
+                            TagText("Carnet de Identidad: ")
+                            ContentText(docente.carnetDoc)
+                        }
+                        Row {
+                            TagText("Nombre Docente: ")
+                            ContentText("${docente.paterno} ${docente.materno}, ${docente.nombre}")
+                        }
+                        Row {
+                            TagText("Carrera Origen: ")
+                            ContentText("${docente.carrera}")
+                        }
+                        Row {
+                            TagText("Sexo: ")
+                            ContentText("${docente.sexo}")
+                        }
+
+                    }
                 }
             }
         }

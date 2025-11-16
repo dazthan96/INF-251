@@ -1,11 +1,15 @@
 package com.inf251.gestionnotas.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
@@ -14,10 +18,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -25,94 +31,97 @@ import com.inf251.gestionnotas.R
 import com.inf251.gestionnotas.components.AddColor
 import com.inf251.gestionnotas.components.DeleteColor
 import com.inf251.gestionnotas.components.EditColor
-import com.inf251.gestionnotas.components.ExitColor
-import com.inf251.gestionnotas.components.FormColor
-import com.inf251.gestionnotas.components.ListColor
-import com.inf251.gestionnotas.components.ReuseBarButton
+import com.inf251.gestionnotas.components.ReuseButtons
+import com.inf251.gestionnotas.components.ReuseDropList
 import com.inf251.gestionnotas.components.ReuseIconButtons
 import com.inf251.gestionnotas.components.ReuseOutlineText
-import com.inf251.gestionnotas.components.SearchColor
 import com.inf251.gestionnotas.components.TitleText
+import com.inf251.gestionnotas.components.getAnioActual
+import com.inf251.gestionnotas.components.periodos
+import com.inf251.gestionnotas.data.dao.SemestreDao
+import com.inf251.gestionnotas.data.entity.SemestreEntity
 import com.inf251.gestionnotas.navigation.AppScreens
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AsignarScreen(navController: NavController){
+fun SemestreScreen(navController: NavController, semestreDao: SemestreDao){
     Scaffold (
         topBar = {
-            TopAppBar(title = {TitleText("Gestión",Color.Black)}, colors = TopAppBarDefaults.topAppBarColors(AddColor))
+            TopAppBar(title = {TitleText("Agregar Gestión",Color.Black)}, colors = TopAppBarDefaults.topAppBarColors(AddColor))
         },
         bottomBar = {
-            Row(Modifier.fillMaxWidth()){
-                ReuseBarButton(R.drawable.docente,"Docente",0.3f,AddColor,Color.White,true
-                ) {
-                    navController.navigate(AppScreens.DocenteScreen.route)
+            Row(Modifier.fillMaxWidth().padding(25.dp), horizontalArrangement = Arrangement.Center){
+                ReuseIconButtons(R.drawable.left,DeleteColor,Color.White) {
+                    navController.navigate(AppScreens.AsignarForm.route)
                 }
-                ReuseBarButton(R.drawable.materia,"Materia",0.5f,AddColor,Color.White,true
-                ) {
-                    navController.navigate(AppScreens.MateriaScreen.route)
-                }
-                ReuseBarButton(R.drawable.asignar,"Asignar",1.0f,AddColor,Color.White,false
-                ) {}
-
             }
         }
 
     ){
-            innerPadding->AsignarContent(modifier=Modifier.padding(innerPadding))
+            innerPadding->SemestreContent(modifier=Modifier.padding(innerPadding),semestreDao)
     }
 }
 @Composable
-fun AsignarContent(modifier: Modifier=Modifier){
-    var ciDocente by remember { mutableStateOf("") }
-    var codMateria by remember { mutableStateOf("") }
-    var semestre by remember { mutableStateOf("") }
-    Column(modifier = modifier) {
-        Row (Modifier.fillMaxWidth()){
-            Column (
-                Modifier.fillMaxWidth(0.8f).padding(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally) {
-                ReuseOutlineText(
-                    ciDocente,
-                    { ciDocente = it },
-                    "Docente",
-                    true,
-                    false,
-                    KeyboardType.Text
-                )
-                ReuseOutlineText(
-                    codMateria,
-                    { codMateria = it },
-                    "Materia",
-                    true,
-                    false,
-                    KeyboardType.Text
-                )
-                ReuseOutlineText(
-                    semestre,
-                    { semestre = it },
-                    "Semestre",
-                    true,
-                    false,
-                    KeyboardType.Text
-                )
+fun SemestreContent(modifier: Modifier=Modifier,semestreDao: SemestreDao){
+    var anio by remember { mutableStateOf("") }
+    var periodo by remember { mutableStateOf("") }
+    var idSemestre by remember { mutableStateOf("") }
+    val context= LocalContext.current
+    val scope = rememberCoroutineScope()
+    idSemestre = if(anio.isNotEmpty()){
+        "$anio-$periodo"
+    }else{
+        ""
+    }
 
-            }
-            Column (Modifier
-                .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceAround
-            ){
-                Column {
-                    ReuseIconButtons(R.drawable.add, AddColor,Color.White,{})
-                    ReuseIconButtons(R.drawable.search, SearchColor,Color.White,{})
-                    ReuseIconButtons(R.drawable.edit, EditColor,Color.White,{})
-                    ReuseIconButtons(R.drawable.delete, DeleteColor,Color.White,{})
-                    ReuseIconButtons(R.drawable.list, ListColor,Color.White,{})
+
+    Column(modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+        ReuseOutlineText(idSemestre,{idSemestre=it},"Semestre",
+            enable = true,
+            readOnly = false,
+            type = KeyboardType.Number
+        )
+        ReuseOutlineText(
+            anio,
+            { anio = it },
+            "Año",
+            true,
+            readOnly = false,
+            type = KeyboardType.Number
+        )
+        Spacer(Modifier.height(7.dp))
+        ReuseDropList(periodos,periodo,"Periodo a elegir") {periodo=it }
+        Row (Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center){
+            ReuseButtons("Agregar", AddColor,Color.White) {
+                scope.launch {
+                    val anioInt = anio.toIntOrNull()
+                    val currentYear = getAnioActual()
+                    if(anioInt== null || anioInt<2000 ||anioInt>currentYear){
+                        Toast.makeText(context, "Año inválido", Toast.LENGTH_SHORT).show()
+                    }else if(periodo.isBlank()){
+                        Toast.makeText(context, "Periodo Requerido", Toast.LENGTH_SHORT).show()
+                    }else{
+                        semestreDao.insertarSem(SemestreEntity(
+                            idSemestre = idSemestre,
+                            anioSem = anio,
+                            periodoSem = periodo
+                        ))
+                        idSemestre=""
+                        anio=""
+                        periodo=""
+                    }
+
                 }
-                Column {
-                    ReuseIconButtons(R.drawable.nota, FormColor,Color.White,{})
-                    ReuseIconButtons(R.drawable.exit, ExitColor,Color.White,{})
+            }
+            Spacer(Modifier.width(15.dp))
+            ReuseButtons("Editar",EditColor,Color.White) {
+                scope.launch {
+                    semestreDao.modificarMat(SemestreEntity(
+                        idSemestre = idSemestre,
+                        anioSem = anio,
+                        periodoSem = periodo
+                    ))
                 }
             }
         }

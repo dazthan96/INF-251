@@ -3,9 +3,16 @@ package com.inf251.gestionnotas.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
@@ -14,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,21 +31,22 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.inf251.gestionnotas.R
 import com.inf251.gestionnotas.components.AddColor
-import com.inf251.gestionnotas.components.DeleteColor
-import com.inf251.gestionnotas.components.EditColor
-import com.inf251.gestionnotas.components.ExitColor
-import com.inf251.gestionnotas.components.FormColor
-import com.inf251.gestionnotas.components.ListColor
+import com.inf251.gestionnotas.components.ContentText
 import com.inf251.gestionnotas.components.ReuseBarButton
-import com.inf251.gestionnotas.components.ReuseIconButtons
+import com.inf251.gestionnotas.components.ReuseButtons
 import com.inf251.gestionnotas.components.ReuseOutlineText
 import com.inf251.gestionnotas.components.SearchColor
+import com.inf251.gestionnotas.components.TagText
 import com.inf251.gestionnotas.components.TitleText
+import com.inf251.gestionnotas.data.dao.MateriaDao
+import com.inf251.gestionnotas.data.dao.MateriaFTS
+import com.inf251.gestionnotas.data.entity.MateriaEntity
 import com.inf251.gestionnotas.navigation.AppScreens
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MateriaScreen(navController: NavController){
+fun MateriaScreen(navController: NavController, materiaFTS: MateriaFTS,materiaDao: MateriaDao){
     Scaffold (
         topBar = {
             TopAppBar(title = {TitleText("Materia",Color.Black)}, colors = TopAppBarDefaults.topAppBarColors(AddColor))
@@ -58,46 +67,74 @@ fun MateriaScreen(navController: NavController){
         }
 
     ){
-            innerPadding->MateriaContent(modifier=Modifier.padding(innerPadding))
+            innerPadding->MateriaContent(modifier=Modifier.padding(innerPadding),navController,materiaFTS,materiaDao)
     }
 }
 
 @Composable
-fun MateriaContent(modifier: Modifier=Modifier){
-    var siglaMateria by remember{ mutableStateOf("") }
-    var nombreMateria by remember{mutableStateOf("")}
-    var carreraMateria by remember {mutableStateOf("")}
-    var mencionMateria by remember { mutableStateOf("") }
+fun MateriaContent(modifier: Modifier=Modifier,navController: NavController,materiaFTS: MateriaFTS,materiaDao: MateriaDao){
+    val scope = rememberCoroutineScope()
+    var param by remember { mutableStateOf("") }
+    var materias by remember { mutableStateOf<List<MateriaEntity>>(emptyList()) }
     Column (
-        modifier = modifier
+        modifier = modifier.fillMaxSize().padding(top = 25.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ){
-        Row (Modifier.fillMaxWidth()){
-            Column (
-                Modifier.fillMaxWidth(0.8f).padding(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally){
-                ReuseOutlineText(siglaMateria, {siglaMateria=it}, "Codigo", true, false, KeyboardType.Text)
-                ReuseOutlineText(nombreMateria,{nombreMateria=it},"Materia", true, false, KeyboardType.Text)
-                ReuseOutlineText(carreraMateria, {carreraMateria=it}, "Carrera", true, false, KeyboardType.Text)
-                ReuseOutlineText(mencionMateria, {mencionMateria=it}, "Mencion", true, false,KeyboardType.Text)
+        ReuseOutlineText(param, {param=it},"Buscar en Materias",true,false, KeyboardType.Text)
+        Row(
+            Modifier.fillMaxWidth(0.8f),
+            horizontalArrangement = Arrangement.Center
+        ){
+            ReuseButtons("Gestionar",AddColor,Color.White) {
+                navController.navigate(AppScreens.MateriaForm.route)
             }
-            Column (Modifier
-                .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceAround
-            ){
-                Column {
-                    ReuseIconButtons(R.drawable.add, AddColor,Color.White,{})
-                    ReuseIconButtons(R.drawable.search, SearchColor,Color.White,{})
-                    ReuseIconButtons(R.drawable.edit, EditColor,Color.White,{})
-                    ReuseIconButtons(R.drawable.delete, DeleteColor,Color.White,{})
-                    ReuseIconButtons(R.drawable.list, ListColor,Color.White,{})
-                }
-                Column {
-                    ReuseIconButtons(R.drawable.nota, FormColor,Color.White,{})
-                    ReuseIconButtons(R.drawable.exit, ExitColor,Color.White,{})
+            Spacer(Modifier.width(15.dp))
+            ReuseButtons("Buscar", SearchColor,Color.White) {
+                scope.launch {
+                    materias = if(param.isBlank()){
+                        materiaDao.listarMatN()
+                    }else{
+                        val q = prepararQueryFTS(param)
+                        materiaFTS.buscarMFts(param)
+                    }
                 }
             }
         }
-    }
+        Spacer(Modifier.height(25.dp))
+        LazyColumn {
+            items(materias){materia->
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp),
+                    colors = CardDefaults.cardColors(Color(0xFFDCDCDC))
+                ){
+                    Column (Modifier.padding(25.dp)){
+                        Row {
+                            TagText("Sigla de Materia: ")
+                            ContentText(materia.siglaMat)
+                        }
+                        Row {
+                            TagText("Nombre de Materia: ")
+                            ContentText("${materia.materia}")
+                        }
+                        Row {
+                            TagText("Carrera Origen: ")
+                            ContentText("${materia.carreraMat}")
+                        }
+                        Row {
+                            TagText("Mencion: ")
+                            ContentText("${materia.mencionMat}")
+                        }
 
+                    }
+                }
+
+            }
+        }
+    }
+}
+fun prepararQueryFTS(input: String): String {
+    return input.trim()
+        .split(" ")
+        .filter { it.isNotBlank() }
+        .joinToString(" AND ")
 }
