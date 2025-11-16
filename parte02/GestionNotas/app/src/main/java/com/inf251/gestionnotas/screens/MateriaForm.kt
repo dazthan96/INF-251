@@ -133,12 +133,12 @@ fun FormularioMateria(modifier: Modifier=Modifier, materiaDao: MateriaDao){
                 Column {
                     ReuseIconButtons(R.drawable.add, AddColor,Color.White) {
                         scope.launch {
-                            if(siglaMateria.isBlank()||nombreMateria.isBlank()||carreraMateria.isBlank()||mencionMateria.isBlank()){
-                                Toast.makeText(context, "Por favor,llene todos los campos", Toast.LENGTH_SHORT).show()
+                            if(siglaMateria.isBlank()||nombreMateria.isBlank()||carreraMateria.isBlank()||mencionMateria.isBlank()||siglaMateria.length!=7 ||!veriSigla(siglaMateria)){
+                                Toast.makeText(context, "Por favor,llene los campos correctamente", Toast.LENGTH_SHORT).show()
                             }else{
                                 materiaDao.insertarMat(MateriaEntity(
-                                    siglaMat = siglaMateria,
-                                    materia = nombreMateria,
+                                    siglaMat = siglaMateria.trim().lowercase(),
+                                    materia = nombreMateria.lowercase(),
                                     carreraMat = carreraMateria,
                                     mencionMat = mencionMateria)
                                 )
@@ -161,10 +161,10 @@ fun FormularioMateria(modifier: Modifier=Modifier, materiaDao: MateriaDao){
                     ReuseIconButtons(R.drawable.edit, EditColor,Color.White) {
                         scope.launch {
                             val id = siglaMateria
-                            if(id!=""){
+                            if(id!=""||veriSigla(siglaMateria)){
                                 materiaDao.modificarMat(MateriaEntity(
-                                    siglaMat = siglaMateria,
-                                    materia = nombreMateria,
+                                    siglaMat = siglaMateria.trim().lowercase(),
+                                    materia = nombreMateria.lowercase(),
                                     carreraMat = carreraMateria,
                                     mencionMat = mencionMateria
                                 ))
@@ -173,7 +173,7 @@ fun FormularioMateria(modifier: Modifier=Modifier, materiaDao: MateriaDao){
                     }
                     ReuseIconButtons(R.drawable.delete, DeleteColor,Color.White) {
                         scope.launch {
-                            val id = siglaMateria
+                            val id = siglaMateria.trim().lowercase()
                             if(id!=""){
                                 materiaDao.aliminarDoc(id)
                                 siglaMateria=""
@@ -187,4 +187,8 @@ fun FormularioMateria(modifier: Modifier=Modifier, materiaDao: MateriaDao){
         }
     }
 
+}
+fun veriSigla(sigla:String): Boolean{
+    val regex = Regex("^[a-zA-Z]{3}-\\d{3}$")
+    return regex.matches(sigla)
 }

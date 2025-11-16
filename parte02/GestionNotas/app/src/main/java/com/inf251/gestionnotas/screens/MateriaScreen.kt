@@ -80,7 +80,11 @@ fun MateriaContent(modifier: Modifier=Modifier,navController: NavController,mate
         modifier = modifier.fillMaxSize().padding(top = 25.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        ReuseOutlineText(param, {param=it},"Buscar en Materias",true,false, KeyboardType.Text)
+        ReuseOutlineText(param.lowercase(), {param=it},"Buscar en Materias",
+            enable = true,
+            readOnly = false,
+            type = KeyboardType.Text
+        )
         Row(
             Modifier.fillMaxWidth(0.8f),
             horizontalArrangement = Arrangement.Center
@@ -94,7 +98,6 @@ fun MateriaContent(modifier: Modifier=Modifier,navController: NavController,mate
                     materias = if(param.isBlank()){
                         materiaDao.listarMatN()
                     }else{
-                        val q = prepararQueryFTS(param)
                         materiaFTS.buscarMFts(param)
                     }
                 }
@@ -131,10 +134,4 @@ fun MateriaContent(modifier: Modifier=Modifier,navController: NavController,mate
             }
         }
     }
-}
-fun prepararQueryFTS(input: String): String {
-    return input.trim()
-        .split(" ")
-        .filter { it.isNotBlank() }
-        .joinToString(" AND ")
 }

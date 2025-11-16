@@ -147,14 +147,14 @@ fun FormularioDocente( modifier: Modifier=Modifier,docenteDao: DocenteDao){
                 Column {
                     ReuseIconButtons(R.drawable.add, AddColor,Color.White) {
                         scope.launch {
-                            if(ciDocente.isBlank()||paternoDoc.isBlank()||maternoDoc.isBlank()||nombreDoc.isBlank()||carreraDoc.isBlank()||sexoDoc.isBlank()){
+                            if(ciDocente.isBlank()||paternoDoc.isBlank()||maternoDoc.isBlank()||nombreDoc.isBlank()||carreraDoc.isBlank()||sexoDoc.isBlank()||ciDocente.length<6||ciDocente.length>10||ciDocente.toIntOrNull()==null){
                                 Toast.makeText(context, "Por favor, llenar todos los campos", Toast.LENGTH_SHORT).show()
                             }else{
                                 docenteDao.insertarDoc(DocenteEntity(
-                                    carnetDoc = ciDocente,
-                                    paterno = paternoDoc,
-                                    materno = maternoDoc,
-                                    nombre = nombreDoc,
+                                    carnetDoc = ciDocente.trim(),
+                                    paterno = paternoDoc.trim().lowercase(),
+                                    materno = maternoDoc.trim().lowercase(),
+                                    nombre = nombreDoc.trim().lowercase(),
                                     carrera = carreraDoc,
                                     sexo = sexoDoc)
                                 )
@@ -181,10 +181,10 @@ fun FormularioDocente( modifier: Modifier=Modifier,docenteDao: DocenteDao){
                             val carnet = ciDocente
                             if(carnet !=""){
                                 docenteDao.modificarDoc(DocenteEntity(
-                                    carnetDoc = carnet,
-                                    paterno = paternoDoc,
-                                    materno = maternoDoc,
-                                    nombre = nombreDoc,
+                                    carnetDoc = carnet.trim().lowercase(),
+                                    paterno = paternoDoc.trim().lowercase(),
+                                    materno = maternoDoc.trim().lowercase(),
+                                    nombre = nombreDoc.trim().lowercase(),
                                     carrera = carreraDoc,
                                     sexo = sexoDoc)
                                 )

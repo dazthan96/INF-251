@@ -28,7 +28,6 @@ import com.inf251.gestionnotas.R
 import com.inf251.gestionnotas.components.AddColor
 import com.inf251.gestionnotas.components.DeleteColor
 import com.inf251.gestionnotas.components.EditColor
-import com.inf251.gestionnotas.components.ListColor
 import com.inf251.gestionnotas.components.ReuseIconButtons
 import com.inf251.gestionnotas.components.ReuseOutlineText
 import com.inf251.gestionnotas.components.SearchColor
@@ -118,8 +117,8 @@ fun FormularioAsignar(modifier: Modifier=Modifier, asignacionDao: AsignacionDao,
                                 Toast.makeText(context, "Asegurese que las entidades existan", Toast.LENGTH_SHORT).show()
                             }else{
                                 asignacionDao.insertAsig(AsignacionEntity(
-                                    ciDoc = ciDocente,
-                                    sigMat = codMateria,
+                                    ciDoc = ciDocente.trim().lowercase(),
+                                    sigMat = codMateria.trim().lowercase(),
                                     idSem = semestre
                                 ))
                                 ciDocente=""

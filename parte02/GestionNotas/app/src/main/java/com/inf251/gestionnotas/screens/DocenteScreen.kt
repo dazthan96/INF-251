@@ -80,7 +80,7 @@ fun DocenteContent( modifier: Modifier=Modifier, navController: NavController,do
         modifier = modifier.fillMaxSize().padding(top = 25.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        ReuseOutlineText(param, {param=it},"Buscar en Docentes",true,false, KeyboardType.Text)
+        ReuseOutlineText(param.lowercase(), {param=it},"Buscar en Docentes",true,false, KeyboardType.Text)
         Row(
             Modifier.fillMaxWidth(0.8f),
             horizontalArrangement = Arrangement.Center

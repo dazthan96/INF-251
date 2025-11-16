@@ -97,7 +97,7 @@ fun AsignarContent(modifier: Modifier=Modifier,navController: NavController,asig
     ){
 
         Row (Modifier.fillMaxWidth().padding(3.dp)){
-            ReuseOutlineTextShort(ciDocente,{ciDocente=it},"CI Docente", 0.45f,KeyboardType.Text)
+            ReuseOutlineTextShort(ciDocente,{ciDocente=it},"CI Docente", 0.45f,KeyboardType.Number)
             Spacer(Modifier.width(8.dp))
             ReuseOutlineTextShort(nomDocente,{nomDocente=it},"Nombre Docente", 1.0f,KeyboardType.Text)
         }
