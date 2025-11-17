@@ -14,8 +14,9 @@ interface AsignacionDao {
     suspend fun insertAsig(asignacion: AsignacionEntity)
     @Update
     suspend fun updateAsig(asignaicon: AsignacionEntity)
-    @Delete
-    suspend fun deleteAsig(asignacion: AsignacionEntity)
+    @Query("DELETE FROM asignacion WHERE ciDoc = :ciDoc AND sigMat = :siglaMat AND idSem = :semestre")
+    suspend fun deleteAsig(ciDoc: String, siglaMat: String, semestre: String)
+
     @Query("""
         SELECT d.carnetDoc as ciDocente,
         d.nombreDoc as nomDocente,

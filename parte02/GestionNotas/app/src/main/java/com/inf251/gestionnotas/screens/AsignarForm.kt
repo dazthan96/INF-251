@@ -139,14 +139,15 @@ fun FormularioAsignar(modifier: Modifier=Modifier, asignacionDao: AsignacionDao,
                     }
                     ReuseIconButtons(R.drawable.delete, DeleteColor,Color.White) {
                         scope.launch {
-                            asignacionDao.deleteAsig(AsignacionEntity(
+                            asignacionDao.deleteAsig(
                                 ciDoc = ciDocente,
-                                sigMat = codMateria,
-                                idSem = semestre
-                            ))
+                                siglaMat = codMateria,
+                                semestre = semestre
+                            )
+                            ciDocente=""
+                            codMateria=""
                         }
-                        ciDocente=""
-                        codMateria=""
+
                     }
 
                 }
