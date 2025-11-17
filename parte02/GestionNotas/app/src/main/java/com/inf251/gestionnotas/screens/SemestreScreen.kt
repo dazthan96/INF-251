@@ -79,7 +79,7 @@ fun SemestreContent(modifier: Modifier=Modifier,semestreDao: SemestreDao){
     Column(modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
         ReuseOutlineText(idSemestre,{idSemestre=it},"Semestre",
             enable = true,
-            readOnly = false,
+            readOnly = true,
             type = KeyboardType.Number
         )
         ReuseOutlineText(
@@ -117,11 +117,18 @@ fun SemestreContent(modifier: Modifier=Modifier,semestreDao: SemestreDao){
             Spacer(Modifier.width(15.dp))
             ReuseButtons("Editar",EditColor,Color.White) {
                 scope.launch {
-                    semestreDao.modificarMat(SemestreEntity(
-                        idSemestre = idSemestre,
-                        anioSem = anio,
-                        periodoSem = periodo
-                    ))
+                    if(anio.isBlank()||periodo.isBlank()){
+                        Toast.makeText(context, "Por favor, llene todos los campos", Toast.LENGTH_SHORT).show()
+                    }else{
+                        semestreDao.modificarMat(SemestreEntity(
+                            idSemestre = idSemestre,
+                            anioSem = anio,
+                            periodoSem = periodo
+                        ))
+                        idSemestre=""
+                        anio=""
+                    }
+
                 }
             }
         }

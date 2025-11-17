@@ -178,16 +178,23 @@ fun FormularioDocente( modifier: Modifier=Modifier,docenteDao: DocenteDao){
                     }
                     ReuseIconButtons(R.drawable.edit, EditColor,Color.White) {
                         scope.launch {
-                            val carnet = ciDocente
-                            if(carnet !=""){
+                            if(ciDocente.isBlank()||paternoDoc.isBlank()||maternoDoc.isBlank()||nombreDoc.isBlank()||carreraDoc.isBlank()||sexoDoc.isBlank()||ciDocente.length<6||ciDocente.length>10||ciDocente.toIntOrNull()==null){
+                                Toast.makeText(context, "Por favor, llenar todos los campos", Toast.LENGTH_SHORT).show()
+                            }else{
                                 docenteDao.modificarDoc(DocenteEntity(
-                                    carnetDoc = carnet.trim().lowercase(),
+                                    carnetDoc = ciDocente.trim(),
                                     paterno = paternoDoc.trim().lowercase(),
                                     materno = maternoDoc.trim().lowercase(),
                                     nombre = nombreDoc.trim().lowercase(),
                                     carrera = carreraDoc,
                                     sexo = sexoDoc)
                                 )
+                                ciDocente=""
+                                paternoDoc=""
+                                maternoDoc=""
+                                nombreDoc=""
+                                carreraDoc=""
+                                sexoDoc=""
                             }
                         }
                     }

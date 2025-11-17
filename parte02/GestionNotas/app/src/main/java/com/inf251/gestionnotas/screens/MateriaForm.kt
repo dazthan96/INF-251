@@ -160,14 +160,19 @@ fun FormularioMateria(modifier: Modifier=Modifier, materiaDao: MateriaDao){
                     }
                     ReuseIconButtons(R.drawable.edit, EditColor,Color.White) {
                         scope.launch {
-                            val id = siglaMateria
-                            if(id!=""||veriSigla(siglaMateria)){
+                            if(siglaMateria.isBlank()||nombreMateria.isBlank()||carreraMateria.isBlank()||mencionMateria.isBlank()||siglaMateria.length!=7 ||!veriSigla(siglaMateria)){
+                                Toast.makeText(context, "Por favor,llene los campos correctamente", Toast.LENGTH_SHORT).show()
+                            }else{
                                 materiaDao.modificarMat(MateriaEntity(
                                     siglaMat = siglaMateria.trim().lowercase(),
                                     materia = nombreMateria.lowercase(),
                                     carreraMat = carreraMateria,
-                                    mencionMat = mencionMateria
-                                ))
+                                    mencionMat = mencionMateria)
+                                )
+                                siglaMateria=""
+                                nombreMateria=""
+                                carreraMateria=""
+                                mencionMateria=""
                             }
                         }
                     }
