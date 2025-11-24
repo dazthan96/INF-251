@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
 fun Localizacion(fusedLocationClient: FusedLocationProviderClient) {
     var locationText by remember { mutableStateOf("Ubicación no disponible") }
 
-    val context = androidx.compose.ui.platform.LocalContext.current
+    val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
