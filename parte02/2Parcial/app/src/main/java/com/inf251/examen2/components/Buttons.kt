@@ -91,7 +91,7 @@ fun Buttons(text:String, colorButton: Int, colorContent: Int, enabled: Boolean, 
         onClick = onclick,
         shape= RoundedCornerShape(50),
         enabled = enabled,
-        modifier=Modifier.width(120.dp),
+        modifier=Modifier.width(130.dp),
         colors= ButtonDefaults.buttonColors(containerColor = colorResource(colorButton), contentColor = colorResource(colorContent))
     ) {
         Text(text)
